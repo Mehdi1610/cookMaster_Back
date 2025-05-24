@@ -1,7 +1,7 @@
-package com.cookMaster.cookMaster_back.controller.categoryController;
+package com.cookMaster.controller;
 
-import com.cookMaster.cookMaster_back.dto.CategoryDTO;
-import com.cookMaster.cookMaster_back.service.categoryService.CategoryService;
+import com.cookMaster.dto.CategoryDTO;
+import com.cookMaster.service.categoryService.CategoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

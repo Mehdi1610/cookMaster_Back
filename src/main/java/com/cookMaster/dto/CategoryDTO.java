@@ -1,4 +1,4 @@
-package com.cookMaster.cookMaster_back.dto;
+package com.cookMaster.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -24,4 +24,5 @@ public class CategoryDTO {
                 ", name='" + name +
                 '}';
     }
+
 }
