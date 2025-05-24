@@ -1,4 +1,4 @@
-package com.cookMaster.cookMaster_back.model;
+package com.cookMaster.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -22,11 +22,5 @@ public class Category {
         this.name = name;
     }
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", name='" + name;
-    }
 }
 

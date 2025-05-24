@@ -1,4 +1,4 @@
-package com.cookMaster.cookMaster_back;
+package com.cookMaster;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

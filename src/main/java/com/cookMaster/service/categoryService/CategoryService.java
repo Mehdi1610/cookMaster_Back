@@ -1,6 +1,6 @@
-package com.cookMaster.cookMaster_back.service.categoryService;
+package com.cookMaster.service.categoryService;
 
-import com.cookMaster.cookMaster_back.dto.CategoryDTO;
+import com.cookMaster.dto.CategoryDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.cookMaster.cookMaster_back.repository;
+package com.cookMaster.repository;
 
-import com.cookMaster.cookMaster_back.model.Category;
+import com.cookMaster.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
