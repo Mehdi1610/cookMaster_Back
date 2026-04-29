@@ -1,8 +1,10 @@
 package com.cookMaster.controller;
 
 import com.cookMaster.dto.RecipeDTO;
+import com.cookMaster.dto.RecipePageResponse;
 import com.cookMaster.exceptions.TechnicalException;
 import com.cookMaster.service.recipeService.RecipeService;
+import com.cookMaster.utils.AppConstants;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -28,11 +30,14 @@ public class RecipeController {
     @PostMapping(value = "recipe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<RecipeDTO> createRecipe(
             @RequestPart("recipe") @Valid RecipeDTO recipeDTO,
-            @RequestPart("file") MultipartFile file) throws IOException, TechnicalException {
+            @RequestPart("file") MultipartFile file) throws IOException{
         log.info("POST recipe : {}", recipeDTO.getTitle());
+        /*
         if (file.isEmpty()){
             throw  new TechnicalException("File is empty ! Please send another file!");
         }
+
+         */
         return ResponseEntity.ok(recipeService.createRecipe(recipeDTO, file));
     }
 
@@ -41,6 +46,24 @@ public class RecipeController {
         List<RecipeDTO> recipes = recipeService.getAllRecipesByUser(id);
         log.info("GET recipes : {}", recipes);
         return ResponseEntity.ok(recipes);
+    }
+    //aussi a restreindre selon l'id user connecté
+    @GetMapping("allRecipesPage")
+    public ResponseEntity<RecipePageResponse> getRecipesWithPagination(@RequestParam(defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+                                                                       @RequestParam(defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize) {
+        RecipePageResponse recipePages = recipeService.getAllRecipeWithPagination(pageNumber,pageSize);
+        log.info("GET recipesPage : {}", recipePages);
+        return ResponseEntity.ok(recipePages);
+    }
+    //aussi a restreindre selon l'id user connecté
+    @GetMapping("allRecipesPageSort")
+    public ResponseEntity<RecipePageResponse> getRecipesWithPaginationAndSorting(@RequestParam(defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+                                                                                 @RequestParam(defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+                                                                                 @RequestParam(defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+                                                                                 @RequestParam(defaultValue = AppConstants.SORT_DIR, required = false) String dir) {
+        RecipePageResponse recipePagesWithSorting = recipeService.getAllRecipeWithPaginationAndSorting(pageNumber,pageSize,sortBy,dir);
+        log.info("GET recipesPageWithSorting : {}", recipePagesWithSorting);
+        return ResponseEntity.ok(recipePagesWithSorting);
     }
 
     @GetMapping("recipe/{id}")

@@ -1,9 +1,9 @@
 package com.cookMaster.service.recipeService;
 
 import com.cookMaster.dto.RecipeDTO;
+import com.cookMaster.dto.RecipePageResponse;
 import com.cookMaster.exceptions.FileExistsException;
 import com.cookMaster.exceptions.NotFoundException;
-import com.cookMaster.exceptions.RecipeNotFoundException;
 import com.cookMaster.mapper.RecipeMapper;
 import com.cookMaster.model.*;
 import com.cookMaster.repository.CategoryRepository;
@@ -11,6 +11,10 @@ import com.cookMaster.repository.RecipeRepository;
 import com.cookMaster.repository.UserRepository;
 import com.cookMaster.service.fileService.FileService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -165,4 +169,31 @@ public class RecipeServiceImpl implements RecipeService{
         Files.deleteIfExists(Paths.get(path + File.separator + fileName));
         recipeRepository.delete(recipe);
     }
+
+    @Override
+    public RecipePageResponse getAllRecipeWithPagination(Integer pageNumber, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        //A MODIFIER SUR UN GETALLRECIPEBYID
+
+        Page<Recipe> recipePages = recipeRepository.findAll(pageable);
+        List<RecipeDTO> recipes = recipePages.getContent().stream().map(recipeMapper::toDto).toList();
+
+        return new RecipePageResponse(recipes, pageNumber, pageSize, recipePages.getNumberOfElements(), recipePages.getTotalPages(), recipePages.isLast());
+    }
+
+    @Override
+    public RecipePageResponse getAllRecipeWithPaginationAndSorting(Integer pageNumber, Integer pageSize, String sortBy, String dir) {
+
+        Sort sort = dir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending()
+                                                                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNumber,pageSize, sort);
+        //A MODIFIER SUR UN GETALLRECIPEBYID
+
+        Page<Recipe> recipePages = recipeRepository.findAll(pageable);
+        List<RecipeDTO> recipes = recipePages.getContent().stream().map(recipeMapper::toDto).toList();
+
+        return new RecipePageResponse(recipes, pageNumber, pageSize, recipePages.getNumberOfElements(), recipePages.getTotalPages(), recipePages.isLast());
+    }
+
 }
