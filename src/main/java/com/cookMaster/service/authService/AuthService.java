@@ -1,11 +1,14 @@
 package com.cookMaster.service.authService;
 
+import com.cookMaster.model.User;
 import com.cookMaster.model.UserRole;
 import com.cookMaster.repository.UserRepository;
+import com.cookMaster.utils.AuthResponse;
+import com.cookMaster.utils.LoginRequest;
+import com.cookMaster.utils.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,9 +25,8 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest registerRequest) {
         var user = User.builder()
-                .username(registerRequest.getUsername())
+                .name(registerRequest.getUsername())
                 .email(registerRequest.getEmail())
-                .username(registerRequest.getUsername())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .role(UserRole.CUSTOMER)
                 .build();

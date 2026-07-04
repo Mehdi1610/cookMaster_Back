@@ -4,6 +4,7 @@ import com.cookMaster.dto.UserDTO;
 import com.cookMaster.service.userService.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class UserController {
         log.info("POST user : {}", userDTO.getName());
         return ResponseEntity.ok(userService.createUser(userDTO));
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("users")
     public ResponseEntity<List<UserDTO>> getUsers() {
         List<UserDTO> users = userService.getAllUsers();

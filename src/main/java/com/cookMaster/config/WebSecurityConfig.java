@@ -37,13 +37,19 @@ public class WebSecurityConfig {
     private final AuthFilterService authFilterService;
     private final AuthenticationProvider authenticationProvider;
 
-    @ConditionalOnMissingBean
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/forgotPassword/**", "/file/**")
+                        .requestMatchers("/api/v1/auth/**"
+                                , "/forgotPassword/**"
+                                , "/file/**"
+                                ,"/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api-docs/**",
+                                "/api-docs.yaml")
                         .permitAll()
                         .anyRequest()
                         .authenticated())
@@ -60,7 +66,7 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("localhost:8080"));
+        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
