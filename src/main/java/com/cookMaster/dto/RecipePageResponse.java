@@ -5,7 +5,7 @@ import java.util.List;
 public record RecipePageResponse(List<RecipeDTO> recipeDTOS,
                                  Integer pageNumber,
                                  Integer pageSize,
-                                 int totalElements,
+                                 long totalElements,
                                  int totalPages,
                                  boolean isLast) {
     
