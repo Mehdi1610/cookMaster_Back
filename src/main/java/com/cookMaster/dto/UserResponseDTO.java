@@ -1,13 +1,15 @@
 package com.cookMaster.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
+@AllArgsConstructor
 @Data
-@RequiredArgsConstructor
+@Builder
+public class UserResponseDTO {
 
-public class UserDTO {
 
     @JsonProperty
     private Long id;
@@ -15,10 +17,7 @@ public class UserDTO {
     @JsonProperty
     private String name;
 
-    @JsonProperty
-    private String password;
 
     @JsonProperty
     private String email;
-
 }

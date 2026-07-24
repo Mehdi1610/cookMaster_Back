@@ -1,6 +1,6 @@
 package com.cookMaster.dto;
 
-import com.cookMaster.model.Recipe;
+import com.cookMaster.utils.Unit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +14,8 @@ public class IngredientDTO {
 
     private String name;
 
-    private String quantity;
+    private Double quantity;
+
+    private Unit unit;
 
 }

@@ -1,5 +1,8 @@
 package com.cookMaster.service.authService;
 
+import com.cookMaster.dto.UserDTO;
+import com.cookMaster.dto.UserResponseDTO;
+import com.cookMaster.mapper.UserMapper;
 import com.cookMaster.model.User;
 import com.cookMaster.model.UserRole;
 import com.cookMaster.repository.UserRepository;
@@ -22,6 +25,8 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
+
 
     public AuthResponse register(RegisterRequest registerRequest) {
         var user = User.builder()
@@ -34,12 +39,12 @@ public class AuthService {
         User savedUser = userRepository.save(user);
         var accessToken = jwtService.generateToken(savedUser);
         var refreshToken = refreshTokenService.createRefreshToken(savedUser.getEmail());
+        UserDTO userDTO = userMapper.toDto(savedUser);
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getRefreshToken())
-                .name(savedUser.getName())
-                .email(savedUser.getEmail())
+                .user(new UserResponseDTO(userDTO.getId(), userDTO.getName(),userDTO.getEmail()))
                 .build();
     }
 
@@ -54,12 +59,13 @@ public class AuthService {
         var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
         var accessToken = jwtService.generateToken(user);
         var refreshToken = refreshTokenService.createRefreshToken(loginRequest.getEmail());
+        UserDTO userDTO = userMapper.toDto(user);
+
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getRefreshToken())
-                .name(user.getName())
-                .email(user.getEmail())
+                .user(new UserResponseDTO(userDTO.getId(), userDTO.getName(),userDTO.getEmail()))
                 .build();
     }
 }

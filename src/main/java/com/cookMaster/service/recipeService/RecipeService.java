@@ -11,12 +11,13 @@ public interface RecipeService {
 
     RecipeDTO createRecipe(RecipeDTO recipeDTO, MultipartFile file) throws IOException;
 
+
     RecipeDTO getRecipe(Long recipeId);
 
     List<RecipeDTO> getAllRecipesByUser(Long userId);
 
 
-    RecipeDTO updateByRecipeId(Long id, RecipeDTO recipeDTO, MultipartFile file) throws IOException;
+    RecipeDTO updateRecipe(Long id, RecipeDTO recipeDTO, MultipartFile file, Long currentUserId) throws IOException;
 
     void deleteRecipeById(Long recipeId) throws IOException;
 
@@ -24,4 +25,6 @@ public interface RecipeService {
 
     RecipePageResponse getAllRecipeWithPaginationAndSorting(Integer pageNumber, Integer pageSize,
                                                             String sortBy, String dir);
+
+
 }

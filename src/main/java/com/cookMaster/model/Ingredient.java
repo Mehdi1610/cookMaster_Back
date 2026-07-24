@@ -1,5 +1,6 @@
 package com.cookMaster.model;
 
+import com.cookMaster.utils.Unit;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -18,7 +19,11 @@ public class Ingredient {
     private String name;
 
     @Column(name = "quantity")
-    private String quantity;
+    private Double quantity;
+
+    @Column(name="unit")
+    @Enumerated(EnumType.STRING)
+    private Unit unit;
 
     @ManyToOne
     @JoinColumn(name = "recipe_id")

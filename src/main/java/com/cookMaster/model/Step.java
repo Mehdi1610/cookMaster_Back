@@ -18,6 +18,7 @@ public class Step {
     private String description;
 
     @Column(name = "stepnumber")
+    @OrderBy("stepNumber ASC")
     private Integer stepNumber;
 
     @ManyToOne

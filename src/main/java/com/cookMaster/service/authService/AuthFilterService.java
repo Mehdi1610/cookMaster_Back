@@ -19,12 +19,21 @@ public class AuthFilterService extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final RefreshTokenService refreshTokenService;
 
-    public AuthFilterService(JwtService jwtService, UserDetailsService userDetailsService) {
+    public AuthFilterService(JwtService jwtService, UserDetailsService userDetailsService, RefreshTokenService refreshTokenService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.refreshTokenService= refreshTokenService;
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getServletPath();
+        return path.startsWith("/api/v1/file")
+                || path.startsWith("/api/v1/auth")
+                || path.startsWith("/swagger-ui");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

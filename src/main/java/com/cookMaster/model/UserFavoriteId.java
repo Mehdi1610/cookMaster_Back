@@ -3,7 +3,9 @@ package com.cookMaster.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
 import java.io.Serial;
@@ -12,6 +14,8 @@ import java.util.Objects;
 
 @Data
 @Embeddable
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserFavoriteId implements Serializable {
 
     @Serial

@@ -26,7 +26,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(name = "username")
     private String name;
@@ -37,8 +37,8 @@ public class User implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @OneToOne(mappedBy = "user")
-    private  RefreshToken refreshToken;
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private RefreshToken refreshToken;
 
 
     @Enumerated(EnumType.STRING)
@@ -51,6 +51,11 @@ public class User implements UserDetails {
     private Set<Favorite> favorites = new LinkedHashSet<>();
 
 
+    public User(long id, String name, String email){
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

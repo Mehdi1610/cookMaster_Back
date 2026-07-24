@@ -1,5 +1,6 @@
 package com.cookMaster.utils;
 
+import com.cookMaster.dto.UserResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +14,5 @@ public class AuthResponse {
 
     private String accessToken;
     private String refreshToken;
-    private String name;
-    private String email;
+    private UserResponseDTO user;
 }

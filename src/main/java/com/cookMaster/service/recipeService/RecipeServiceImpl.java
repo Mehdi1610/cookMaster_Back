@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -63,11 +64,17 @@ public class RecipeServiceImpl implements RecipeService{
                 .orElseThrow(() -> new NotFoundException("Catégorie introuvable"));
 
         //Preparer l'image url
-        if(Files.exists(Paths.get(path + File.separator + file.getOriginalFilename()))){
-            throw new FileExistsException("le fichier existe déjà! Veuillez entrer un nouveau fichier");
+        String imageUrl= null;
+
+        if(file != null){
+
+            if(Files.exists(Paths.get(path + File.separator + file.getOriginalFilename()))){
+                throw new FileExistsException("le fichier existe déjà! Veuillez entrer un nouveau fichier");
+            }
+            String uploadedFileName = fileService.uploadFile(path,file);
+            imageUrl = baseUrl + "/api/v1/file/" + uploadedFileName;
         }
-        String uploadedFileName = fileService.uploadFile(path,file);
-        String imageUrl = baseUrl + "/api/v1/file/" + uploadedFileName;
+
 
         //créer la recette
         Recipe recipe = recipeMapper.toEntity(recipeDTO);
@@ -129,33 +136,60 @@ public class RecipeServiceImpl implements RecipeService{
     }
 
     @Override
-    public RecipeDTO updateByRecipeId(Long id, RecipeDTO recipeDTO, MultipartFile file) throws IOException {
+    public RecipeDTO updateRecipe(Long id, RecipeDTO recipeDTO, MultipartFile file, Long currentUserId) throws IOException {
 
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Recette non trouvé avec l'id : "+ id));
 
+// Sécurité : seul le propriétaire peut modifier sa recette
+        if (!recipe.getUser().getId().equals(currentUserId)) {
+            throw new AccessDeniedException("Vous n'êtes pas autorisé à modifier cette recette");
+        }
 
-        recipeMapper.updateRecipeFromDto(recipeDTO,recipe);
-        if (recipeDTO != null){
-            if(recipeDTO.getCategoryId() != null){
+        if (recipeDTO != null) {
+            recipeMapper.updateRecipeFromDto(recipeDTO, recipe);
+
+            if (recipeDTO.getCategoryId() != null) {
                 Category category = categoryRepository.findById(recipeDTO.getCategoryId())
                         .orElseThrow(() -> new NotFoundException("Catégorie introuvable"));
                 recipe.setCategory(category);
-                recipeRepository.save(recipe);
+            }
+
+            // --- Steps : remplacer par la nouvelle liste ---
+            recipe.getSteps().clear();
+            if (recipeDTO.getSteps() != null) {
+                recipeDTO.getSteps().forEach(stepDTO -> {
+                    Step step = recipeMapper.stepToEntity(stepDTO);
+                    step.setRecipe(recipe);
+                    recipe.getSteps().add(step);
+                });
+            }
+
+            // --- Ingredients : remplacer par la nouvelle liste ---
+            recipe.getIngredients().clear();
+            if (recipeDTO.getIngredients() != null) {
+                recipeDTO.getIngredients().forEach(ingredientDTO -> {
+                    Ingredient ingredient = recipeMapper.ingredientToEntity(ingredientDTO);
+                    ingredient.setRecipe(recipe);
+                    recipe.getIngredients().add(ingredient);
+                });
             }
         }
 
-        String fileName = recipe.getImageUrl().substring(recipe.getImageUrl().lastIndexOf("/") + 1);
-        if (file != null){
-            Files.deleteIfExists(Paths.get(path + File.separator + fileName));
-             fileName = fileService.uploadFile(path,file);
-            String imageUrl = baseUrl + "/api/v1/file/" + fileName;
-            recipe.setImageUrl(imageUrl);
+        if (file != null) {
+            if(recipe.getImageUrl() != null) {
+                String oldFileName = recipe.getImageUrl().substring(recipe.getImageUrl().lastIndexOf("/") + 1);
+                Files.deleteIfExists(Paths.get(path + File.separator + oldFileName));
+            }
+            String newFileName = fileService.uploadFile(path, file);
+            recipe.setImageUrl(baseUrl + "/api/v1/file/" + newFileName);
         }
 
-        RecipeDTO result = recipeMapper.toDto(recipeRepository.save(recipe));
-        result.setUserId(recipe.getUser().getId());
-        result.setCategoryId(recipe.getCategory().getId());
+        Recipe saved = recipeRepository.save(recipe);
+
+        RecipeDTO result = recipeMapper.toDto(saved);
+        result.setUserId(saved.getUser().getId());
+        result.setCategoryId(saved.getCategory().getId());
         return result;
     }
 
@@ -164,9 +198,11 @@ public class RecipeServiceImpl implements RecipeService{
 
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new NotFoundException("Recette non existante"));
+        if(recipe.getImageUrl() != null){
+            String fileName = recipe.getImageUrl().substring(recipe.getImageUrl().lastIndexOf("/") + 1);
+            Files.deleteIfExists(Paths.get(path + File.separator + fileName));
+        }
 
-        String fileName = recipe.getImageUrl().substring(recipe.getImageUrl().lastIndexOf("/") + 1);
-        Files.deleteIfExists(Paths.get(path + File.separator + fileName));
         recipeRepository.delete(recipe);
     }
 
